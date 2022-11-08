@@ -4,7 +4,7 @@ const Campground = require('../models/campground'); // modified:   ".." <- this 
 
 //Import from cities.js
 const cities = require('./cities'); 
-//import from seedHelpers.js
+//Import from seedHelpers.js
 const { places, descriptors } = require('./seedHelpers');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
@@ -41,4 +41,6 @@ const seedDB = async () => {
 
 /* //execute the function */
 
-seedDB();
+seedDB().then(() => {
+    db.close();
+})
