@@ -8,5 +8,10 @@
 </head>
 <body>
     <h1>All Campgrounds</h1>
+    <ol>
+        <% for (let campground of campgrounds){%>
+        <li><%= campground.title%> / <%= campground.location%></li>
+        <% } %>
+    </ol>
 </body>
 </html>
