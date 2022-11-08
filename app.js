@@ -54,6 +54,14 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', { campgrounds })
 })
 
+
+//request campgrounds by id to render on show.ejs
+
+app.get('/campgrounds/:id', async (req, res,) => {
+    const campground = await Campground.findById(req.params.id)
+    res.render('campgrounds/show', { campground });
+});
+
 //set port listening
 
 app.listen(3000, () => {
