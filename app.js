@@ -14,6 +14,7 @@ mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useUnifiedTopology: true
 });
 
+
 //db set as shortcut of mongoose.connection
 const db = mongoose.connection;
 
@@ -24,6 +25,12 @@ db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
     console.log("Database connected");
 });
+
+
+//require model
+
+const Campground = require('./models/campground');
+
 
 
 //set the template engine to use
@@ -40,14 +47,12 @@ app.get('/', (req, res) => {
     res.render("home") // "home" stands for home.ejs, not just a string
 });
 
-//new campground
+//request Campgrounds
 
-//require model
-
-const Campground = require('./models/campground');
-
-
-
+app.get('/campgrounds', async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render('campgrounds/index', { campgrounds })
+})
 
 //set port listening
 
