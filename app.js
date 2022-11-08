@@ -40,6 +40,20 @@ app.get('/', (req, res) => {
     res.render("home") // "home" stands for home.ejs, not just a string
 });
 
+//new campground
+
+//require model
+
+const Campground = require('./models/campground');
+
+//new url , camp created, saved to db and sent to browser
+
+app.get('/makecampground', async (req, res) => {
+    const camp = new Campground({ title: "My Backyard", description: "cheap camping"});
+    await camp.save();
+    res.send(camp)
+})
+
 
 //set port listening
 
