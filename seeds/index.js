@@ -39,7 +39,7 @@ const seedDB = async () => {
     }
 }
 
-/* //execute the function */
+//execute the function and close session
 
 seedDB().then(() => {
     db.close();
