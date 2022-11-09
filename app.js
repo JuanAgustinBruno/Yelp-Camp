@@ -3,6 +3,12 @@
 const express = require('express');
 const app = express();
 
+//request express to parse the body
+
+app.use(express.urlencoded({ extended: true }));
+
+
+
 //require mongoose 
 const mongoose = require('mongoose');
 
@@ -54,13 +60,28 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', { campgrounds })
 })
 
+//request campgrounds/new
 
-//request campgrounds by id to render on show.ejs
+app.get('/campgrounds/new', (req, res) => {
+    res.render('campgrounds/new');
+})
+
+//post new campground
+
+app.post('/campgrounds', async (req, res) => {
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`)
+})
+
+//request campgrounds by id to render on show.ejs (/:id can create confilct with other requests so mast be placed last)
 
 app.get('/campgrounds/:id', async (req, res,) => {
     const campground = await Campground.findById(req.params.id)
     res.render('campgrounds/show', { campground });
 });
+
+
 
 //set port listening
 
