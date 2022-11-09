@@ -7,7 +7,10 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 
+//require method override to fake put requests for forms
 
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"))
 
 //require mongoose 
 const mongoose = require('mongoose');
@@ -82,6 +85,30 @@ app.get('/campgrounds/:id', async (req, res,) => {
 });
 
 
+//edit campground 
+
+app.get('/campgrounds/:id/edit', async (req, res) => {
+    const campground = await Campground.findById(req.params.id)
+    res.render('campgrounds/edit', { campground });
+})
+
+//request put /campgrounds/_id , find and update on db, redirect to the campground
+
+/* What is in req params?
+params is an object of the req object that contains route parameters. 
+If the params are specified when a URL is built, then the req. 
+params object will be populated when the URL is requested. */
+
+/* What does req.body? 
+The req. body object allows you to access data in a string or JSON object from the client side.
+ You generally use the req. body object to receive data through POST and PUT requests 
+ in the Express server. */
+
+app.put('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params; //req.params will take the id from the url
+    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+    res.redirect(`/campgrounds/${campground._id}`)
+});
 
 //set port listening
 
