@@ -45,6 +45,12 @@ const Campground = require('./models/campground');
 //set the template engine to use
 app.set('view engine', 'ejs');
 
+//set template functions for the EJS template engine
+
+const ejsMate = require("ejs-mate");
+app.engine("ejs", ejsMate);
+
+
 //sets the path to views folder
 const path = require('path');
 app.set('views', path.join(__dirname, 'views'))
