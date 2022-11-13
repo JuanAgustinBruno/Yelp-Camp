@@ -55,6 +55,9 @@ app.engine("ejs", ejsMate);
 const path = require('path');
 app.set('views', path.join(__dirname, 'views'))
 
+//require function that catches errors async functions
+
+const catchAsync = require("./utils/catchAsync");
 
 //request to localhost:3000/
 
@@ -64,10 +67,10 @@ app.get('/', (req, res) => {
 
 //request Campgrounds
 
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds', catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds })
-})
+}))
 
 //request campgrounds/new
 
@@ -77,7 +80,7 @@ app.get('/campgrounds/new', (req, res) => {
 
 //error handling on async request to create new campground
 
-app.post('/campgrounds', async (req, res, next) => {
+app.post('/campgrounds', catchAsync(async (req, res, next) => {
     try {
         const campground = new Campground(req.body.campground);
         await campground.save();
@@ -85,22 +88,22 @@ app.post('/campgrounds', async (req, res, next) => {
     } catch(e) {
         next(e)
     }
-})
+}));
 
 //request campgrounds by id to render on show.ejs (/:id can create confilct with other requests so mast be placed last)
 
-app.get('/campgrounds/:id', async (req, res,) => {
+app.get('/campgrounds/:id', catchAsync(async (req, res,) => {
     const campground = await Campground.findById(req.params.id)
     res.render('campgrounds/show', { campground });
-});
+}));
 
 
 //edit campground 
 
-app.get('/campgrounds/:id/edit', async (req, res) => {
+app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id)
     res.render('campgrounds/edit', { campground });
-})
+}))
 
 //request put /campgrounds/_id , find and update on db, redirect to the campground
 
@@ -114,24 +117,24 @@ The req. body object allows you to access data in a string or JSON object from t
  You generally use the req. body object to receive data through POST and PUT requests 
  in the Express server. */
 
-app.put('/campgrounds/:id', async (req, res) => {
+app.put('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params; //req.params will take the id from the url
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     res.redirect(`/campgrounds/${campground._id}`)
-});
+}));
 
 //request to delete using mongoose method findByIdAndDelete
-app.delete('/campgrounds/:id', async (req, res) => {
+app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
-})
+}));
 
 //Basic error handler  - 445
 
 app.use((err, req, res, next) => {
     res.send("Something went wrong")
-    console.log("stupid user")
+    console.log("Error:Bad request")
 })
 
 //set port listening
