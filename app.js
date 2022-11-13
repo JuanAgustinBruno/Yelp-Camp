@@ -75,12 +75,16 @@ app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 })
 
-//post new campground
+//error handling on async request to create new campground
 
-app.post('/campgrounds', async (req, res) => {
-    const campground = new Campground(req.body.campground);
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`)
+app.post('/campgrounds', async (req, res, next) => {
+    try {
+        const campground = new Campground(req.body.campground);
+        await campground.save();
+        res.redirect(`/campgrounds/${campground._id}`)
+    } catch(e) {
+        next(e)
+    }
 })
 
 //request campgrounds by id to render on show.ejs (/:id can create confilct with other requests so mast be placed last)
@@ -121,6 +125,13 @@ app.delete('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
+})
+
+//Basic error handler  - 445
+
+app.use((err, req, res, next) => {
+    res.send("Something went wrong")
+    console.log("stupid user")
 })
 
 //set port listening
