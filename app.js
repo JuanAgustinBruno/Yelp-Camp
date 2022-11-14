@@ -59,6 +59,12 @@ app.set('views', path.join(__dirname, 'views'))
 
 const catchAsync = require("./utils/catchAsync");
 
+
+//require the ExpressError class
+
+const ExpressError = require("./utils/ExpressError")
+
+
 //request to localhost:3000/
 
 app.get('/', (req, res) => {
@@ -81,14 +87,11 @@ app.get('/campgrounds/new', (req, res) => {
 //error handling on async request to create new campground
 
 app.post('/campgrounds', catchAsync(async (req, res, next) => {
-    try {
+        if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
         const campground = new Campground(req.body.campground);
         await campground.save();
-        res.redirect(`/campgrounds/${campground._id}`)
-    } catch(e) {
-        next(e)
-    }
-}));
+        res.redirect(`/campgrounds/${campground._id}`);
+ }));
 
 //request campgrounds by id to render on show.ejs (/:id can create confilct with other requests so mast be placed last)
 
@@ -130,11 +133,16 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     res.redirect('/campgrounds');
 }));
 
-//Basic error handler  - 445
+//catch all errors that werent handled by the asyncCatch with the ExpressError class
+
+app.all("*", (req,res,next) => {
+    next(new ExpressError("Page not found, 404"))
+})
+//error handler 
 
 app.use((err, req, res, next) => {
-    res.send("Something went wrong")
-    console.log("Error:Bad request")
+    const  {statusCode = 500, message = "something went wrong"} = err; //from ExpressError
+    res.status(statusCode).send(message)
 })
 
 //set port listening
