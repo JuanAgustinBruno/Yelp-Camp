@@ -62,8 +62,24 @@ const catchAsync = require("./utils/catchAsync");
 
 //require the ExpressError class
 
-const ExpressError = require("./utils/ExpressError")
+const ExpressError = require("./utils/ExpressError");
 
+
+//require joi validation scheema
+
+const { campgroundSchema } = require('./schemas.js');
+
+//define middleware for joi validation
+
+const validateCampground = (req, res, next) => {
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
 
 //request to localhost:3000/
 
@@ -86,7 +102,7 @@ app.get('/campgrounds/new', (req, res) => {
 
 //error handling on async request to create new campground
 
-app.post('/campgrounds', catchAsync(async (req, res, next) => {
+app.post("/campgrounds", validateCampground, catchAsync(async (req, res, next) => {
         if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
         const campground = new Campground(req.body.campground);
         await campground.save();
@@ -108,19 +124,9 @@ app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
     res.render('campgrounds/edit', { campground });
 }))
 
-//request put /campgrounds/_id , find and update on db, redirect to the campground
+//sends edit ,request put /campgrounds/_id , find and update on db, redirect to the campgrounds
 
-/* What is in req params?
-params is an object of the req object that contains route parameters. 
-If the params are specified when a URL is built, then the req. 
-params object will be populated when the URL is requested. */
-
-/* What does req.body? 
-The req. body object allows you to access data in a string or JSON object from the client side.
- You generally use the req. body object to receive data through POST and PUT requests 
- in the Express server. */
-
-app.put('/campgrounds/:id', catchAsync(async (req, res) => {
+app.put('/campgrounds/:id',validateCampground, catchAsync(async (req, res) => {
     const { id } = req.params; //req.params will take the id from the url
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     res.redirect(`/campgrounds/${campground._id}`)
@@ -141,8 +147,9 @@ app.all("*", (req,res,next) => {
 //error handler 
 
 app.use((err, req, res, next) => {
-    const  {statusCode = 500, message = "something went wrong"} = err; //from ExpressError
-    res.status(statusCode).send(message)
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = 'Oh No, Something Went Wrong!'
+    res.status(statusCode).render("error", { err })
 })
 
 //set port listening
