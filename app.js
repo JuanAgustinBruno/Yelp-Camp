@@ -67,7 +67,7 @@ const ExpressError = require("./utils/ExpressError");
 
 //require joi validation scheema
 
-const { campgroundSchema } = require('./schemas.js');
+const { campgroundSchema, reviewSchema } = require('./schemas.js');
 
 //define middleware for joi validation
 
@@ -80,6 +80,8 @@ const validateCampground = (req, res, next) => {
         next();
     }
 }
+
+
 
 //request to localhost:3000/
 
@@ -112,7 +114,7 @@ app.post("/campgrounds", validateCampground, catchAsync(async (req, res, next) =
 //request campgrounds by id to render on show.ejs (/:id can create confilct with other requests so mast be placed last)
 
 app.get('/campgrounds/:id', catchAsync(async (req, res,) => {
-    const campground = await Campground.findById(req.params.id)
+    const campground = await Campground.findById(req.params.id).populate('reviews');
     res.render('campgrounds/show', { campground });
 }));
 
@@ -138,6 +140,45 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
 }));
+
+//require the review model
+
+const Review = require('./models/review');
+
+//add middleware for reviews
+
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+
+//request to post new reviews by id
+
+app.post('/campgrounds/:id/reviews',validateReview, catchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+}))
+
+
+//request delete review
+
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
+}))
+
 
 //catch all errors that werent handled by the asyncCatch with the ExpressError class
 
