@@ -1,28 +1,23 @@
 {
-  "name": "yelpcamp",
+  "name": "YelpCamp",
   "version": "1.0.0",
-  "description": "Main project from  \"The Web Developer Bootcamp 2022\" by Colt Steele",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sirkaronte/Yelp-Camp.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/sirkaronte/Yelp-Camp/issues"
-  },
-  "homepage": "https://github.com/sirkaronte/Yelp-Camp#readme",
   "dependencies": {
-    "ejs": "^3.1.8",
-    "ejs-mate": "^4.0.0",
-    "express": "^4.18.2",
-    "joi": "^17.7.0",
+    "connect-flash": "^0.1.1",
+    "ejs": "^3.1.5",
+    "ejs-mate": "^3.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "express-sessions": "^1.0.6",
+    "joi": "^17.2.1",
     "method-override": "^3.0.0",
-    "mongoose": "^6.7.2"
+    "mongoose": "^5.10.4"
   }
 }

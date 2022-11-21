@@ -1,13 +1,6 @@
-//requiere mongoose
 const mongoose = require('mongoose');
-
-//create variable shortcut to mongoose.Scheema
-const Schema = mongoose.Schema;
-
-//require the reviews scheema
 const Review = require('./review')
-
-//create CampgroundSchema
+const Schema = mongoose.Schema;
 
 const CampgroundSchema = new Schema({
     title: String,
@@ -22,7 +15,6 @@ const CampgroundSchema = new Schema({
         }
     ]
 });
-//delete the reviews inside a deleted campground
 
 CampgroundSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
@@ -33,7 +25,5 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
         })
     }
 })
-
-//export scheema CampgroundSchema named "Campground"
 
 module.exports = mongoose.model('Campground', CampgroundSchema);
