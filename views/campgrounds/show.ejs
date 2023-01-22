@@ -4,7 +4,9 @@
 <div class="row">
     <div class="col-6">
         <div class="card mb-3">
-            <img src="<%= campground.image%>" class="card-img-top" alt="...">
+            <% for(let img of campground.images) { %>
+            <img src="<%= img.url%>" class="card-img-top" alt="...">
+            <% }%>
             <div class="card-body">
                 <h5 class="card-title"><%= campground.title%></h5>
                 <p class="card-text"><%= campground.description%></p>
@@ -32,10 +34,6 @@
         <% if(currentUser) {%>
         <h2>Leave a Review</h2>
         <form action="/campgrounds/<%=campground._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
-            <!-- <div class="mb-3">
-                <label class="form-label" for="rating">Rating</label>
-                <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
-            </div> -->
             <fieldset class="starability-basic">
                 <legend>Rating:</legend>
                 <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
@@ -68,7 +66,7 @@
                 <p class="starability-result" data-rating= <%= review.rating %>>
                     Rated: <%= review.rating %> stars
                 </p>
-                <!-- <p class="card-text">Review: <%= review.body %></p> -->
+                <p class="card-text">Review: <%= review.body %></p>
                     
             <%  if( currentUser && review.author.equals(currentUser._id))  {%>
                 <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
