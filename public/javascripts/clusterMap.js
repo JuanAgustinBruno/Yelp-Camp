@@ -1,6 +1,6 @@
 mapboxgl.accessToken = mapToken;
 const map = new mapboxgl.Map({
-    container: 'map',
+    container: 'cluster-map',
     
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: 'mapbox://styles/mapbox/satellite-streets-v12', /* dark-v11 */
@@ -9,6 +9,8 @@ const map = new mapboxgl.Map({
     projection: 'globe' // starting projection
 
 });
+
+map.addControl(new mapboxgl.NavigationControl());
 
 console.log(campgrounds)
 
