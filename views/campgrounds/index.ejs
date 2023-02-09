@@ -12,9 +12,15 @@
 <% for (let campground of campgrounds.reverse()){%>
 <div class="card mb-3">
     <div class="row">
+        <%if(campground.images.length) {%>
         <div class="col-md-4" >
-            <img class="img-fluid"  src="<%=campground.images[0].url%>">
+            <img class="img-fluid"  src="<%=campground.images[0].url%>" crossorigin>
         </div>
+        <% }else {%>
+            <img class="img-fluid" alt=""
+                src="https://source.unsplash.com/collection/483251" crossorigin>
+        <% } %>
+
         <div class="col-md-8">
             <div class="card-body">
                 <h5 class="card-title"><%= campground.title %> </h5>
